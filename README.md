@@ -1,25 +1,13 @@
 <pre>
-READING-LIST(7)                  Joel's Reading List                  READING-LIST(7)
-
-<b>NAME</b>
-       reading-list - index of technical articles, docs and books worth re-reading
-
-<b>SYNOPSIS</b>
-       <b>reading-list</b> [<i>database-internals</i>] [<i>system-design</i>] [<i>books</i>]
-
-<b>DESCRIPTION</b>
-       A personal index of technical reading. Only what I found genuinely useful
-       and would read again makes it here. Entries marked <b>(*)</b> are re-read yearly.
-
 <b>DATABASE INTERNALS</b>
-       <a href="https://www.uber.com/en-US/blog/postgres-to-mysql-migration/">Why Uber Engineering Switched from Postgres to MySQL</a> <b>(*)</b>
+       <a href="https://www.uber.com/en-US/blog/postgres-to-mysql-migration/">Why Uber Engineering Switched from Postgres to MySQL</a>
               Learned how Postgres and MySQL (InnoDB) work internally: on-disk
               layout, index structure, MVCC, WAL vs redo log and replication,
               plus the trade-offs and use cases of each. The article where I've
               learned the most about database internals, by far.
 
    <b>PostgreSQL</b>
-       <a href="https://www.interdb.jp/pg/">The Internals of PostgreSQL - Hironobu Suzuki</a> <b>(*)</b>
+       <a href="https://www.interdb.jp/pg/">The Internals of PostgreSQL - Hironobu Suzuki</a>
               Free online book and the best summary of how Postgres works inside:
               heap and tuple layout, MVCC (xmin/xmax), VACUUM, HOT updates,
               buffer manager, WAL and streaming replication.
@@ -81,6 +69,4 @@ READING-LIST(7)                  Joel's Reading List                  READING-LI
 
 <b>AUTHOR</b>
        Joel Teodoro Gomez &lt;<a href="https://runtimerants.dev">runtimerants.dev</a>&gt;
-
-GitHub                              2026-09-29                         READING-LIST(7)
 </pre>
