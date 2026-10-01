@@ -7,11 +7,11 @@
               learned the most about database internals, by far.
        
        <a href="https://shopify.engineering/scaling-inventory-reservations">Shopify - We replaced Redis with MySQL for inventory reservations</a>
-              How Shopify moved checkout reservations from Redis to MySQL to get ACID
-              with the inventory ledger: one row per unit plus SELECT ... FOR UPDATE
-              SKIP LOCKED, composite PKs to halve InnoDB row locks, READ COMMITTED
-              to avoid gap locks and consistent lock ordering against deadlocks.
-              Real bottleneck: connection hold time, not CPU or queries.
+              How Shopify rebuilt its inventory reservation system on MySQL, and
+              how understanding InnoDB internals (lock types, isolation levels,
+              SKIP LOCKED, primary key design) let them push a database much
+              further than expected. Bonus lesson: the real bottleneck was
+              connection hold time, not CPU or queries.
        
    <b>PostgreSQL</b>
        <a href="https://www.interdb.jp/pg/">The Internals of PostgreSQL - Hironobu Suzuki</a>
@@ -36,6 +36,11 @@
               Official diagram of InnoDB's in-memory and on-disk structures: buffer
               pool, change buffer, adaptive hash index, redo/undo logs and
               doublewrite buffer.
+       
+       <a href="https://jahfer.com/posts/innodb-locks/">Jahfer Husain - A Comprehensive (and Animated) Guide to InnoDB Locking</a>
+       The guide Shopify cites to understand their gap lock problem. Shared
+       vs exclusive, record, gap and next-key locks, how isolation levels
+       change them, and why non-unique indexes can lock up to +infinity.
 
        <a href="https://blog.jcole.us/innodb/">Jeremy Cole - InnoDB internals</a>
               Byte-level deep dives into InnoDB's on-disk format: pages, records,
