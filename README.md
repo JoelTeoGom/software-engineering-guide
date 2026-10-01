@@ -5,7 +5,14 @@
               layout, index structure, MVCC, WAL vs redo log and replication,
               plus the trade-offs and use cases of each. The article where I've
               learned the most about database internals, by far.
-
+       
+       <a href="https://shopify.engineering/scaling-inventory-reservations">Shopify - We replaced Redis with MySQL for inventory reservations</a>
+              How Shopify moved checkout reservations from Redis to MySQL to get ACID
+              with the inventory ledger: one row per unit plus SELECT ... FOR UPDATE
+              SKIP LOCKED, composite PKs to halve InnoDB row locks, READ COMMITTED
+              to avoid gap locks and consistent lock ordering against deadlocks.
+              Real bottleneck: connection hold time, not CPU or queries.
+       
    <b>PostgreSQL</b>
        <a href="https://www.interdb.jp/pg/">The Internals of PostgreSQL - Hironobu Suzuki</a>
               Free online book and the best summary of how Postgres works inside:
