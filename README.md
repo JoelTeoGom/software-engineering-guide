@@ -59,6 +59,14 @@
               network-bound before CPU-bound.
 
 <b>SYSTEM DESIGN</b>
+       <a href="https://www.figma.com/blog/how-figmas-databases-team-lived-to-tell-the-scale/">Figma - How Figma's databases team lived to tell the scale</a>
+              How Figma scaled Postgres ~100x without leaving it: vertical
+              partitioning first, then horizontal sharding by hashed shard key
+              (user, file, org) behind a Go query-routing proxy, with shadow
+              planning on live traffic to support only the 90% of queries worth it.
+              They rejected CockroachDB, TiDB, Spanner and Vitess: the best
+              solution isn't the most powerful one, but the one your team can
+              ship without stopping the product.
        <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">How Discord Stores Trillions of Messages</a>
               Learned how hot partitions happen even with a good partition key
               (channel + time bucket, Snowflake IDs), and why Cassandra's JVM GC
