@@ -67,6 +67,7 @@
               They rejected CockroachDB, TiDB, Spanner and Vitess: the best
               solution isn't the most powerful one, but the one your team can
               ship without stopping the product.
+       
        <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">How Discord Stores Trillions of Messages</a>
               Learned how hot partitions happen even with a good partition key
               (channel + time bucket, Snowflake IDs), and why Cassandra's JVM GC
@@ -75,6 +76,19 @@
               channel ID. When you need to squeeze every millisecond, the
               language matters: GC pauses in Java caused latency spikes that
               disappeared with C++ (ScyllaDB) and Rust (data services).
+
+       <a href="https://stripe.com/blog/online-migrations">Stripe - Online migrations at scale</a>
+              How to move data between models with zero downtime using the
+              four-step dual-writing pattern: dual write, move reads, move
+              writes, remove the old path, with backfills and verification in
+              between. The application-level way to keep two stores in sync.
+
+       <a href="https://shopify.engineering/capturing-every-change-shopify-sharded-monolith">Shopify - Capturing every change from Shopify's sharded monolith</a>
+              Why query-based CDC (polling updated_at) misses hard deletes and
+              intermediate states, and how Shopify replaced it with log-based CDC:
+              Debezium reading the MySQL binlog of 100+ shards into Kafka, one
+              compacted topic per logical table, p99 under 10s. The log-level
+              alternative to Stripe's dual writes.
 
 <b>BOOKS</b>
        <b>Database Internals</b> - Alex Petrov (Part I, ch. 1-5, 7)
