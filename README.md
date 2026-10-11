@@ -59,6 +59,13 @@
               network-bound before CPU-bound.
 
 <b>SYSTEM DESIGN</b>
+              <a href="https://martin.kleppmann.com/2015/05/27/logs-for-data-infrastructure.html">Martin Kleppmann - Using logs to build a solid data infrastructure</a>
+              By the author of DDIA. Why dual writes are a bad idea (race
+              conditions and partial failures lead to permanent inconsistency),
+              and how the append-only log shows up in four places: storage
+              engines (WAL, LSM), replication, consensus (Raft) and Kafka.
+              The theory behind Stripe's dual writes vs Shopify's CDC.
+       
        <a href="https://www.figma.com/blog/how-figmas-databases-team-lived-to-tell-the-scale/">Figma - How Figma's databases team lived to tell the scale</a>
               How Figma scaled Postgres ~100x without leaving it: vertical
               partitioning first, then horizontal sharding by hashed shard key
@@ -67,6 +74,14 @@
               They rejected CockroachDB, TiDB, Spanner and Vitess: the best
               solution isn't the most powerful one, but the one your team can
               ship without stopping the product.
+       
+              <a href="https://slack.engineering/scaling-datastores-at-slack-with-vitess/">Slack - Scaling Datastores at Slack with Vitess</a>
+              Same problem as Figma, different answer. Slack's MySQL was sharded
+              by workspace, so one huge team could saturate a whole shard and its
+              data couldn't be split further. They didn't want to leave MySQL, so
+              instead of building their own sharding layer like Figma, they
+              adopted Vitess: open-source MySQL sharding born at YouTube, now a
+              CNCF project like Kubernetes, with flexible shard keys.
        
        <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">How Discord Stores Trillions of Messages</a>
               Learned how hot partitions happen even with a good partition key
