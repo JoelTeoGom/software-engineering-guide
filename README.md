@@ -5,14 +5,14 @@
               layout, index structure, MVCC, WAL vs redo log and replication,
               plus the trade-offs and use cases of each. The article where I've
               learned the most about database internals, by far.
-       
+
        <a href="https://shopify.engineering/scaling-inventory-reservations">Shopify - We replaced Redis with MySQL for inventory reservations</a>
               How Shopify rebuilt its inventory reservation system on MySQL, and
               how understanding InnoDB internals (lock types, isolation levels,
               SKIP LOCKED, primary key design) let them push a database much
               further than expected. Bonus lesson: the real bottleneck was
               connection hold time, not CPU or queries.
-       
+
    <b>PostgreSQL</b>
        <a href="https://www.interdb.jp/pg/">The Internals of PostgreSQL - Hironobu Suzuki</a>
               Free online book and the best summary of how Postgres works inside:
@@ -36,11 +36,11 @@
               Official diagram of InnoDB's in-memory and on-disk structures: buffer
               pool, change buffer, adaptive hash index, redo/undo logs and
               doublewrite buffer.
-       
+
        <a href="https://jahfer.com/posts/innodb-locks/">Jahfer Husain - A Comprehensive (and Animated) Guide to InnoDB Locking</a>
-       The guide Shopify cites to understand their gap lock problem. Shared
-       vs exclusive, record, gap and next-key locks, how isolation levels
-       change them, and why non-unique indexes can lock up to +infinity.
+              The guide Shopify cites to understand their gap lock problem. Shared
+              vs exclusive, record, gap and next-key locks, how isolation levels
+              change them, and why non-unique indexes can lock up to +infinity.
 
        <a href="https://blog.jcole.us/innodb/">Jeremy Cole - InnoDB internals</a>
               Byte-level deep dives into InnoDB's on-disk format: pages, records,
@@ -59,13 +59,6 @@
               network-bound before CPU-bound.
 
 <b>SYSTEM DESIGN</b>
-              <a href="https://martin.kleppmann.com/2015/05/27/logs-for-data-infrastructure.html">Martin Kleppmann - Using logs to build a solid data infrastructure</a>
-              By the author of DDIA. Why dual writes are a bad idea (race
-              conditions and partial failures lead to permanent inconsistency),
-              and how the append-only log shows up in four places: storage
-              engines (WAL, LSM), replication, consensus (Raft) and Kafka.
-              The theory behind Stripe's dual writes vs Shopify's CDC.
-       
        <a href="https://www.figma.com/blog/how-figmas-databases-team-lived-to-tell-the-scale/">Figma - How Figma's databases team lived to tell the scale</a>
               How Figma scaled Postgres ~100x without leaving it: vertical
               partitioning first, then horizontal sharding by hashed shard key
@@ -74,15 +67,23 @@
               They rejected CockroachDB, TiDB, Spanner and Vitess: the best
               solution isn't the most powerful one, but the one your team can
               ship without stopping the product.
-       
-              <a href="https://slack.engineering/scaling-datastores-at-slack-with-vitess/">Slack - Scaling Datastores at Slack with Vitess</a>
+
+       <a href="https://slack.engineering/scaling-datastores-at-slack-with-vitess/">Slack - Scaling Datastores at Slack with Vitess</a>
               Same problem as Figma, different answer. Slack's MySQL was sharded
               by workspace, so one huge team could saturate a whole shard and its
               data couldn't be split further. They didn't want to leave MySQL, so
               instead of building their own sharding layer like Figma, they
               adopted Vitess: open-source MySQL sharding born at YouTube, now a
               CNCF project like Kubernetes, with flexible shard keys.
-       
+
+       <a href="https://developer.squareup.com/blog/abstracting-sharding-with-vitess-and-distributed-deadlocks/">Cash App - Abstracting Sharding with Vitess and Distributed Deadlocks</a>
+              The hidden cost of Vitess hiding sharding from the app: a
+              cross-shard transaction holds its locks on every shard until all of
+              them commit. Two transactions touching shards in opposite order
+              deadlock, and no single MySQL can detect it, so requests hang until
+              timeout and fill the transaction pool. Fix: one transaction per
+              shard. Abstractions don't free you from knowing how locking works.
+
        <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">How Discord Stores Trillions of Messages</a>
               Learned how hot partitions happen even with a good partition key
               (channel + time bucket, Snowflake IDs), and why Cassandra's JVM GC
@@ -91,6 +92,13 @@
               channel ID. When you need to squeeze every millisecond, the
               language matters: GC pauses in Java caused latency spikes that
               disappeared with C++ (ScyllaDB) and Rust (data services).
+
+       <a href="https://martin.kleppmann.com/2015/05/27/logs-for-data-infrastructure.html">Martin Kleppmann - Using logs to build a solid data infrastructure</a>
+              By the author of DDIA. Why dual writes are a bad idea (race
+              conditions and partial failures lead to permanent inconsistency),
+              and how the append-only log shows up in four places: storage
+              engines (WAL, LSM), replication, consensus (Raft) and Kafka.
+              The theory behind Stripe's dual writes vs Shopify's CDC.
 
        <a href="https://stripe.com/blog/online-migrations">Stripe - Online migrations at scale</a>
               How to move data between models with zero downtime using the
