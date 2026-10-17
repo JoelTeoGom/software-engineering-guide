@@ -59,6 +59,23 @@
               network-bound before CPU-bound.
 
 <b>SYSTEM DESIGN</b>
+
+       <a href="https://vsyrakis.dev/blog/how-to-avoid-sharding-yourself/">Vasilios Syrakis - How to Avoid Sharding Yourself</a>
+              Why hash-based tenant routing (even with virtual buckets) is an
+              operational trap: a huge tenant can't be moved without changing
+              its ID, and you can't isolate enterprise or noisy tenants without
+              special-casing the algorithm. A lookup table turns rebalancing into
+              changing one record. Often the "boring" infrastructure is exactly
+              what you need; scale it later with CQRS, like Atlassian did.
+
+       <a href="https://www.atlassian.com/blog/how-we-build/aws-scaling-multi-region-low-latency-service">Atlassian - Scaling low latency, multi-region services on AWS</a>
+              The lookup table at Atlassian scale: a Tenant Context Service that
+              maps each tenant to its region, shard and DB (Jira is DB-per-tenant).
+              CQRS splits a strongly consistent source of truth from read-only
+              DynamoDB replicas per region, fed via Kinesis. Then the lessons:
+              node-local caches with SNS invalidation, ELB vs ALB routing, Guava
+              vs Caffeine, and a client sidecar calling regions in parallel.
+       
        <a href="https://www.figma.com/blog/how-figmas-databases-team-lived-to-tell-the-scale/">Figma - How Figma's databases team lived to tell the scale</a>
               How Figma scaled Postgres ~100x without leaving it: vertical
               partitioning first, then horizontal sharding by hashed shard key
