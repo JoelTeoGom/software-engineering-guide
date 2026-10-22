@@ -59,6 +59,12 @@
               network-bound before CPU-bound.
 
 <b>SYSTEM DESIGN</b>
+       <a href="https://github.blog/news-insights/company-news/gh-ost-github-s-online-migration-tool-for-mysql/">GitHub - gh-ost: GitHub's online schema migration tool for MySQL</a>
+              How to ALTER tables with millions of rows in production without
+              locking them, why the classic trigger-based tools hurt under load,
+              and the tool GitHub built to do it safely: pausable, throttled and
+              testable. Pairs well with Stripe's online migrations, and uses the
+              same binlog Shopify relies on for CDC.
 
        <a href="https://vsyrakis.dev/blog/how-to-avoid-sharding-yourself/">Vasilios Syrakis - How to Avoid Sharding Yourself</a>
               Why hash-based tenant routing (even with virtual buckets) is an
