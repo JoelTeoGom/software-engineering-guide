@@ -1,152 +1,117 @@
-<pre>
-<b>DATABASE INTERNALS</b>
-       <a href="https://www.uber.com/en-US/blog/postgres-to-mysql-migration/">Why Uber Engineering Switched from Postgres to MySQL</a>
-              Learned how Postgres and MySQL (InnoDB) work internally: on-disk
-              layout, index structure, MVCC, WAL vs redo log and replication,
-              plus the trade-offs and use cases of each. The article where I've
-              learned the most about database internals, by far.
+## Database Internals
 
-       <a href="https://shopify.engineering/scaling-inventory-reservations">Shopify - We replaced Redis with MySQL for inventory reservations</a>
-              How Shopify rebuilt its inventory reservation system on MySQL, and
-              how understanding InnoDB internals (lock types, isolation levels,
-              SKIP LOCKED, primary key design) let them push a database much
-              further than expected. Bonus lesson: the real bottleneck was
-              connection hold time, not CPU or queries.
+**[Why Uber Engineering Switched from Postgres to MySQL](https://www.uber.com/en-US/blog/postgres-to-mysql-migration/)**
 
-   <b>PostgreSQL</b>
-       <a href="https://www.interdb.jp/pg/">The Internals of PostgreSQL - Hironobu Suzuki</a>
-              Free online book and the best summary of how Postgres works inside:
-              heap and tuple layout, MVCC (xmin/xmax), VACUUM, HOT updates,
-              buffer manager, WAL and streaming replication.
+Learned how Postgres and MySQL (InnoDB) work internally: on-disk layout, index structure, MVCC, WAL vs redo log and replication, plus the trade-offs and use cases of each. The article where I've learned the most about database internals, by far.
 
-       <a href="https://www.postgresql.org/docs/current/hot-standby.html">PostgreSQL - Hot Standby</a>
-              How read replicas work and why long queries get cancelled
-              ("Handling Query Conflicts"). Extends the replica MVCC problem
-              described in the Uber article.
+**[Shopify - We replaced Redis with MySQL for inventory reservations](https://shopify.engineering/scaling-inventory-reservations)**
 
-       <a href="https://www.postgresql.org/docs/current/wal-configuration.html">PostgreSQL - WAL Configuration</a>
-              Checkpoints, WAL segments and full page writes (torn-page protection).
+How Shopify rebuilt its inventory reservation system on MySQL, and how understanding InnoDB internals (lock types, isolation levels, SKIP LOCKED, primary key design) let them push a database much further than expected. Bonus lesson: the real bottleneck was connection hold time, not CPU or queries.
 
-       <a href="https://www.postgresql.org/docs/current/storage.html">PostgreSQL - Database Physical Storage</a>
-              How Postgres lays out data on disk: file layout, TOAST, free space
-              map, visibility map and page layout.
+### PostgreSQL
 
-   <b>MySQL (InnoDB)</b>
-       <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-architecture.html">MySQL - InnoDB Architecture</a>
-              Official diagram of InnoDB's in-memory and on-disk structures: buffer
-              pool, change buffer, adaptive hash index, redo/undo logs and
-              doublewrite buffer.
+**[The Internals of PostgreSQL - Hironobu Suzuki](https://www.interdb.jp/pg/)**
 
-       <a href="https://jahfer.com/posts/innodb-locks/">Jahfer Husain - A Comprehensive (and Animated) Guide to InnoDB Locking</a>
-              The guide Shopify cites to understand their gap lock problem. Shared
-              vs exclusive, record, gap and next-key locks, how isolation levels
-              change them, and why non-unique indexes can lock up to +infinity.
+Free online book and the best summary of how Postgres works inside: heap and tuple layout, MVCC (xmin/xmax), VACUUM, HOT updates, buffer manager, WAL and streaming replication.
 
-       <a href="https://blog.jcole.us/innodb/">Jeremy Cole - InnoDB internals</a>
-              Byte-level deep dives into InnoDB's on-disk format: pages, records,
-              B+tree indexes and page directory, with diagrams.
+**[PostgreSQL - Hot Standby](https://www.postgresql.org/docs/current/hot-standby.html)**
 
-       <a href="https://dev.mysql.com/doc/refman/5.7/en/replication-formats.html">MySQL - Replication Formats</a>
-              Statement-based vs row-based vs mixed binlog replication and their
-              trade-offs. The logical replication Uber preferred over Postgres'
-              physical WAL shipping.
+How read replicas work and why long queries get cancelled ("Handling Query Conflicts"). Extends the replica MVCC problem described in the Uber article.
 
-   <b>Redis</b>
-       <a href="https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/benchmarks/">Redis Benchmark: Factors impacting Redis performance</a>
-              Which factors actually drive Redis performance: network, single-
-              threaded CPU, pipelining, NUMA and core pinning, VMs and slow fork,
-              connection count and allocators. Key takeaway: Redis is usually
-              network-bound before CPU-bound.
+**[PostgreSQL - WAL Configuration](https://www.postgresql.org/docs/current/wal-configuration.html)**
 
-<b>SYSTEM DESIGN</b>
-       <a href="https://github.blog/news-insights/company-news/gh-ost-github-s-online-migration-tool-for-mysql/">GitHub - gh-ost: GitHub's online schema migration tool for MySQL</a>
-              How to ALTER tables with millions of rows in production without
-              locking them, why the classic trigger-based tools hurt under load,
-              and the tool GitHub built to do it safely: pausable, throttled and
-              testable. Pairs well with Stripe's online migrations, and uses the
-              same binlog Shopify relies on for CDC.
+Checkpoints, WAL segments and full page writes (torn-page protection).
 
-       <a href="https://vsyrakis.dev/blog/how-to-avoid-sharding-yourself/">Vasilios Syrakis - How to Avoid Sharding Yourself</a>
-              Why hash-based tenant routing (even with virtual buckets) is an
-              operational trap: a huge tenant can't be moved without changing
-              its ID, and you can't isolate enterprise or noisy tenants without
-              special-casing the algorithm. A lookup table turns rebalancing into
-              changing one record. Often the "boring" infrastructure is exactly
-              what you need; scale it later with CQRS, like Atlassian did.
+**[PostgreSQL - Database Physical Storage](https://www.postgresql.org/docs/current/storage.html)**
 
-       <a href="https://www.atlassian.com/blog/how-we-build/aws-scaling-multi-region-low-latency-service">Atlassian - Scaling low latency, multi-region services on AWS</a>
-              The lookup table at Atlassian scale: a Tenant Context Service that
-              maps each tenant to its region, shard and DB (Jira is DB-per-tenant).
-              CQRS splits a strongly consistent source of truth from read-only
-              DynamoDB replicas per region, fed via Kinesis. Then the lessons:
-              node-local caches with SNS invalidation, ELB vs ALB routing, Guava
-              vs Caffeine, and a client sidecar calling regions in parallel.
-       
-       <a href="https://www.figma.com/blog/how-figmas-databases-team-lived-to-tell-the-scale/">Figma - How Figma's databases team lived to tell the scale</a>
-              How Figma scaled Postgres ~100x without leaving it: vertical
-              partitioning first, then horizontal sharding by hashed shard key
-              (user, file, org) behind a Go query-routing proxy, with shadow
-              planning on live traffic to support only the 90% of queries worth it.
-              They rejected CockroachDB, TiDB, Spanner and Vitess: the best
-              solution isn't the most powerful one, but the one your team can
-              ship without stopping the product.
+How Postgres lays out data on disk: file layout, TOAST, free space map, visibility map and page layout.
 
-       <a href="https://slack.engineering/scaling-datastores-at-slack-with-vitess/">Slack - Scaling Datastores at Slack with Vitess</a>
-              Same problem as Figma, different answer. Slack's MySQL was sharded
-              by workspace, so one huge team could saturate a whole shard and its
-              data couldn't be split further. They didn't want to leave MySQL, so
-              instead of building their own sharding layer like Figma, they
-              adopted Vitess: open-source MySQL sharding born at YouTube, now a
-              CNCF project like Kubernetes, with flexible shard keys.
+**[DBOS - Does Postgres Scale?](https://www.dbos.dev/blog/benchmarking-workflow-execution-scalability-on-postgres)**
 
-       <a href="https://developer.squareup.com/blog/abstracting-sharding-with-vitess-and-distributed-deadlocks/">Cash App - Abstracting Sharding with Vitess and Distributed Deadlocks</a>
-              The hidden cost of Vitess hiding sharding from the app: a
-              cross-shard transaction holds its locks on every shard until all of
-              them commit. Two transactions touching shards in opposite order
-              deadlock, and no single MySQL can detect it, so requests hang until
-              timeout and fill the transaction pool. Fix: one transaction per
-              shard. Abstractions don't free you from knowing how locking works.
+A single Postgres server sustaining 144K writes/s, and how they found the real bottleneck: not CPU or IOPS, but the WAL flush. pg_stat_activity shows one process doing the group commit while the rest wait on the WAL lock. For queues the limit shifts to lock contention at the head of the queue, fixed by partitioning.
 
-       <a href="https://discord.com/blog/how-discord-stores-trillions-of-messages">How Discord Stores Trillions of Messages</a>
-              Learned how hot partitions happen even with a good partition key
-              (channel + time bucket, Snowflake IDs), and why Cassandra's JVM GC
-              pauses made it worse, leading to ScyllaDB. Key idea: protect the
-              database with request coalescing plus consistent-hash routing by
-              channel ID. When you need to squeeze every millisecond, the
-              language matters: GC pauses in Java caused latency spikes that
-              disappeared with C++ (ScyllaDB) and Rust (data services).
+### MySQL (InnoDB)
 
-       <a href="https://martin.kleppmann.com/2015/05/27/logs-for-data-infrastructure.html">Martin Kleppmann - Using logs to build a solid data infrastructure</a>
-              By the author of DDIA. Why dual writes are a bad idea (race
-              conditions and partial failures lead to permanent inconsistency),
-              and how the append-only log shows up in four places: storage
-              engines (WAL, LSM), replication, consensus (Raft) and Kafka.
-              The theory behind Stripe's dual writes vs Shopify's CDC.
+**[MySQL - InnoDB Architecture](https://dev.mysql.com/doc/refman/8.0/en/innodb-architecture.html)**
 
-       <a href="https://stripe.com/blog/online-migrations">Stripe - Online migrations at scale</a>
-              How to move data between models with zero downtime using the
-              four-step dual-writing pattern: dual write, move reads, move
-              writes, remove the old path, with backfills and verification in
-              between. The application-level way to keep two stores in sync.
+Official diagram of InnoDB's in-memory and on-disk structures: buffer pool, change buffer, adaptive hash index, redo/undo logs and doublewrite buffer.
 
-       <a href="https://shopify.engineering/capturing-every-change-shopify-sharded-monolith">Shopify - Capturing every change from Shopify's sharded monolith</a>
-              Why query-based CDC (polling updated_at) misses hard deletes and
-              intermediate states, and how Shopify replaced it with log-based CDC:
-              Debezium reading the MySQL binlog of 100+ shards into Kafka, one
-              compacted topic per logical table, p99 under 10s. The log-level
-              alternative to Stripe's dual writes.
+**[Jahfer Husain - A Comprehensive (and Animated) Guide to InnoDB Locking](https://jahfer.com/posts/innodb-locks/)**
 
-<b>BOOKS</b>
-       <b>Database Internals</b> - Alex Petrov (Part I, ch. 1-5, 7)
-              How storage engines work: pages, B-trees, splits, buffer management,
-              WAL and recovery. Ch. 1 p.20 covers direct pointers vs primary-key
-              indirection (the root of the Uber debate); ch. 7 covers LSM trees.
+The guide Shopify cites to understand their gap lock problem. Shared vs exclusive, record, gap and next-key locks, how isolation levels change them, and why non-unique indexes can lock up to +infinity.
 
-       <b>Designing Data-Intensive Applications</b> - Martin Kleppmann (ch. 3, 5, 7)
-              Heap files vs clustered indexes (ch. 3), statement vs WAL vs logical
-              replication (ch. 5), and how MVCC / snapshot isolation is
-              implemented (ch. 7).
+**[Jeremy Cole - InnoDB internals](https://blog.jcole.us/innodb/)**
 
-<b>AUTHOR</b>
-       Joel Teodoro Gomez &lt;<a href="https://runtimerants.dev">runtimerants.dev</a>&gt;
-</pre>
+Byte-level deep dives into InnoDB's on-disk format: pages, records, B+tree indexes and page directory, with diagrams.
+
+**[MySQL - Replication Formats](https://dev.mysql.com/doc/refman/5.7/en/replication-formats.html)**
+
+Statement-based vs row-based vs mixed binlog replication and their trade-offs. The logical replication Uber preferred over Postgres' physical WAL shipping.
+
+### Redis
+
+**[Redis Benchmark: Factors impacting Redis performance](https://redis.io/docs/latest/operate/oss_and_stack/management/optimization/benchmarks/)**
+
+Which factors actually drive Redis performance: network, single-threaded CPU, pipelining, NUMA and core pinning, VMs and slow fork, connection count and allocators. Key takeaway: Redis is usually network-bound before CPU-bound.
+
+## System Design
+
+**[GitHub - gh-ost: GitHub's online schema migration tool for MySQL](https://github.blog/news-insights/company-news/gh-ost-github-s-online-migration-tool-for-mysql/)**
+
+How to ALTER tables with millions of rows in production without locking them, why the classic trigger-based tools hurt under load, and the tool GitHub built to do it safely: pausable, throttled and testable. Pairs well with Stripe's online migrations, and uses the same binlog Shopify relies on for CDC.
+
+**[Vasilios Syrakis - How to Avoid Sharding Yourself](https://vsyrakis.dev/blog/how-to-avoid-sharding-yourself/)**
+
+Why hash-based tenant routing (even with virtual buckets) is an operational trap: a huge tenant can't be moved without changing its ID, and you can't isolate enterprise or noisy tenants without special-casing the algorithm. A lookup table turns rebalancing into changing one record. Often the "boring" infrastructure is exactly what you need; scale it later with CQRS, like Atlassian did.
+
+**[Atlassian - Scaling low latency, multi-region services on AWS](https://www.atlassian.com/blog/how-we-build/aws-scaling-multi-region-low-latency-service)**
+
+The lookup table at Atlassian scale: a Tenant Context Service that maps each tenant to its region, shard and DB (Jira is DB-per-tenant). CQRS splits a strongly consistent source of truth from read-only DynamoDB replicas per region, fed via Kinesis. Then the lessons: node-local caches with SNS invalidation, ELB vs ALB routing, Guava vs Caffeine, and a client sidecar calling regions in parallel.
+
+**[Figma - How Figma's databases team lived to tell the scale](https://www.figma.com/blog/how-figmas-databases-team-lived-to-tell-the-scale/)**
+
+How Figma scaled Postgres ~100x without leaving it: vertical partitioning first, then horizontal sharding by hashed shard key (user, file, org) behind a Go query-routing proxy, with shadow planning on live traffic to support only the 90% of queries worth it. They rejected CockroachDB, TiDB, Spanner and Vitess: the best solution isn't the most powerful one, but the one your team can ship without stopping the product.
+
+**[Slack - Scaling Datastores at Slack with Vitess](https://slack.engineering/scaling-datastores-at-slack-with-vitess/)**
+
+Same problem as Figma, different answer. Slack's MySQL was sharded by workspace, so one huge team could saturate a whole shard and its data couldn't be split further. They didn't want to leave MySQL, so instead of building their own sharding layer like Figma, they adopted Vitess: open-source MySQL sharding born at YouTube, now a CNCF project like Kubernetes, with flexible shard keys.
+
+**[Cash App - Abstracting Sharding with Vitess and Distributed Deadlocks](https://developer.squareup.com/blog/abstracting-sharding-with-vitess-and-distributed-deadlocks/)**
+
+The hidden cost of Vitess hiding sharding from the app: a cross-shard transaction holds its locks on every shard until all of them commit. Two transactions touching shards in opposite order deadlock, and no single MySQL can detect it, so requests hang until timeout and fill the transaction pool. Fix: one transaction per shard. Abstractions don't free you from knowing how locking works.
+
+**[How Discord Stores Trillions of Messages](https://discord.com/blog/how-discord-stores-trillions-of-messages)**
+
+Learned how hot partitions happen even with a good partition key (channel + time bucket, Snowflake IDs), and why Cassandra's JVM GC pauses made it worse, leading to ScyllaDB. Key idea: protect the database with request coalescing plus consistent-hash routing by channel ID. When you need to squeeze every millisecond, the language matters: GC pauses in Java caused latency spikes that disappeared with C++ (ScyllaDB) and Rust (data services).
+
+**[Martin Kleppmann - Using logs to build a solid data infrastructure](https://martin.kleppmann.com/2015/05/27/logs-for-data-infrastructure.html)**
+
+By the author of DDIA. Why dual writes are a bad idea (race conditions and partial failures lead to permanent inconsistency), and how the append-only log shows up in four places: storage engines (WAL, LSM), replication, consensus (Raft) and Kafka. The theory behind Stripe's dual writes vs Shopify's CDC.
+
+**[Stripe - Online migrations at scale](https://stripe.com/blog/online-migrations)**
+
+How to move data between models with zero downtime using the four-step dual-writing pattern: dual write, move reads, move writes, remove the old path, with backfills and verification in between. The application-level way to keep two stores in sync.
+
+**[Shopify - Capturing every change from Shopify's sharded monolith](https://shopify.engineering/capturing-every-change-shopify-sharded-monolith)**
+
+Why query-based CDC (polling updated_at) misses hard deletes and intermediate states, and how Shopify replaced it with log-based CDC: Debezium reading the MySQL binlog of 100+ shards into Kafka, one compacted topic per logical table, p99 under 10s. The log-level alternative to Stripe's dual writes.
+
+## Performance
+
+**[Uber - How we saved 70K cores across 30 mission-critical services](https://www.uber.com/en-US/blog/how-we-saved-70k-cores-across-30-mission-critical-services/)**
+
+How Uber tuned Go's garbage collector automatically: instead of a fixed GOGC, a tuner adjusts it at runtime based on the container's memory limit, so services trade spare memory for fewer GC cycles. The result was 70K CPU cores saved. Same lesson as Discord: the GC is part of your performance budget.
+
+## Books
+
+**Database Internals** - Alex Petrov (Part I, ch. 1-5, 7)
+
+How storage engines work: pages, B-trees, splits, buffer management, WAL and recovery. Ch. 1 p.20 covers direct pointers vs primary-key indirection (the root of the Uber debate); ch. 7 covers LSM trees.
+
+**Designing Data-Intensive Applications** - Martin Kleppmann (ch. 3, 5, 7)
+
+Heap files vs clustered indexes (ch. 3), statement vs WAL vs logical replication (ch. 5), and how MVCC / snapshot isolation is implemented (ch. 7).
+
+## Author
+
+Joel Teodoro Gomez &lt;[runtimerants.dev](https://runtimerants.dev)&gt;
