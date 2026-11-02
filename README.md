@@ -79,6 +79,17 @@
 **[Uber - How we saved 70K cores across 30 mission-critical services](https://www.uber.com/en-US/blog/how-we-saved-70k-cores-across-30-mission-critical-services/)**
 > How Uber tuned Go's garbage collector automatically: instead of a fixed GOGC, a tuner adjusts it at runtime based on the container's memory limit, so services trade spare memory for fewer GC cycles. The result was 70K CPU cores saved. Same lesson as Discord: the GC is part of your performance budget.
 
+# Security and Networking
+
+**[Andrew Ayer - Preventing Server Side Request Forgery in Golang](https://www.agwa.name/blog/post/preventing_server_side_request_forgery_in_golang)**
+> Why checking a URL before fetching it can't stop SSRF (a public name can resolve to an internal IP, and DNS rebinding changes the answer between the check and the connection), and the fix in Go: check the resolved IP in `net.Dialer.Control`, after DNS and right before `connect()`. Short and practical; the pattern any webhook or scheduler written in Go should copy.
+
+**[OWASP - Server Side Request Forgery Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html)**
+> The reference checklist: allowlists when you know the destinations, and when you don't (webhooks), block internal ranges on the resolved IP, disable redirects, allow only http/https and segment the network. Useful to see every bypass in one place: DNS rebinding, alternative IP spellings, URL parsers that disagree on the host, cloud metadata.
+
+**[Stripe - Smokescreen](https://github.com/stripe/smokescreen)**
+> How Stripe solves SSRF for its webhooks at the platform level: every outbound call goes through an HTTP `CONNECT` egress proxy with mTLS identity, per-service ACLs and a check that the destination isn't internal. Centralizing it also gives fixed egress IPs that customers can allowlist. The answer to "what if a proxy is in the way" is to make the proxy the one that checks.
+
 # Books
 
 **Database Internals** - Alex Petrov (Part I, ch. 1-5, 7)
